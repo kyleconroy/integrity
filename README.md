@@ -52,7 +52,7 @@ import (
     "stackmachine.com/sri"
 )
 
-fucn main() {
+func main() {
     fs, err := sri.ParseFiles("static")
     if err != nil {
         panic(err)
@@ -61,6 +61,10 @@ fucn main() {
     handler := http.FileServer(http.Dir("testdata"))
     handler = sri.Verify(handler)
     handler = http.StripPrefix("/static/", handler)
+
+    // 200 - GET /static/css/style.css 
+    // 200 - GET /static/css/style.css?sha=sha512-valid
+    // 404 - GET /static/css/style.css?sha=sha512-invalid
     http.ListenAndServe(handler, nil)
 }
 ```

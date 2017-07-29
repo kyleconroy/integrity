@@ -20,6 +20,9 @@ type FileSet struct {
 
 // We're not actually parsing anything
 func ParseFiles(root string) (*FileSet, error) {
+	if root == "" {
+		root = "."
+	}
 	hashes := map[string]string{}
 	return &FileSet{hashes, root}, filepath.Walk(root, func(p string, info os.FileInfo, other error) error {
 		if other != nil {
@@ -51,7 +54,12 @@ func (b *FileSet) Digest(p string) (string, error) {
 }
 
 type Verifier struct {
-	Param    string
+	// Query parameter that contains the SHA512 integrity value. Defaults to
+	// "sha".
+	Param string
+
+	// If an integrity value is provided and it doesn't match the file, return
+	// a 404 using this handler. Defaults to http.NotFoundHandler
 	NotFound http.Handler
 
 	bundle *FileSet

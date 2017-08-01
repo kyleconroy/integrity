@@ -1,4 +1,4 @@
-go_import_path: stackmachine.com/sri
+go_import_path: stackmachine.com/integrity
 language: go
 sudo: false
 

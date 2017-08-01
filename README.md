@@ -1,13 +1,13 @@
-# stakmachine/sri
-[![GoDoc](https://godoc.org/stackmachine.com/sri?status.svg)](https://godoc.org/stackmachine.com/sri) [![Build Status](https://travis-ci.org/stackmachine/sri.svg?branch=master)](https://travis-ci.org/stackmachine/sri)
+# stakmachine/integrity
+[![GoDoc](https://godoc.org/stackmachine.com/integrity?status.svg)](https://godoc.org/stackmachine.com/integrity) [![Build Status](https://travis-ci.org/stackmachine/integrity.svg?branch=master)](https://travis-ci.org/stackmachine/integrity)
 
-stackmachine/sri makes it easy to enable subresource integrity for your web
+stackmachine/integrity makes it easy to enable subresource integrity for your web
 applications.
 
 ## Install
 
 ```
-dep ensure stackmachine.com/sri
+dep ensure stackmachine.com/integrity
 ```
 
 ## Usage
@@ -18,12 +18,12 @@ package main
 import (
     "fmt"
 
-    "stackmachine.com/sri"
+    "stackmachine.com/integrity"
 )
 
 func main() {
     // Calculate SHA512 digests for all your static assets
-    fs, err := sri.ParseFiles("static")
+    fs, err := integrity.ParseFiles("static")
     if err != nil {
         panic(err)
     }
@@ -40,7 +40,7 @@ func main() {
 }
 ```
 
-The `sri` package also ships with a `http.Handler` that checks if an included
+The `integrity` package also ships with a `http.Handler` that checks if an included
 digest is valid.
 
 ```go
@@ -49,17 +49,17 @@ package main
 import (
     "net/http"
     
-    "stackmachine.com/sri"
+    "stackmachine.com/integrity"
 )
 
 func main() {
-    fs, err := sri.ParseFiles("static")
+    fs, err := integrity.ParseFiles("static")
     if err != nil {
         panic(err)
     }
 
     handler := http.FileServer(http.Dir("testdata"))
-    handler = sri.Verify(handler)
+    handler = integrity.Verify(handler, fs)
     handler = http.StripPrefix("/static/", handler)
 
     // 200 - GET /static/css/style.css 

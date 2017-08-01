@@ -1,4 +1,4 @@
-package sri
+package integrity
 
 import (
 	"net/http"

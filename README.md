@@ -7,7 +7,7 @@ applications.
 ## Install
 
 ```
-dep ensure stackmachine.com/integrity
+dep ensure github.com/stackmachine/integrity
 ```
 
 ## Usage
@@ -18,7 +18,7 @@ package main
 import (
     "fmt"
 
-    "stackmachine.com/integrity"
+    "github.com/stackmachine/integrity"
 )
 
 func main() {
@@ -49,7 +49,7 @@ package main
 import (
     "net/http"
     
-    "stackmachine.com/integrity"
+    "github.com/stackmachine/integrity"
 )
 
 func main() {

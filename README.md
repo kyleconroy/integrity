@@ -1,14 +1,8 @@
 # stakmachine/integrity
-[![GoDoc](https://godoc.org/stackmachine.com/integrity?status.svg)](https://godoc.org/stackmachine.com/integrity) [![Build Status](https://travis-ci.org/stackmachine/integrity.svg?branch=master)](https://travis-ci.org/stackmachine/integrity)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/stackmachine/integrity)](https://pkg.go.dev/github.com/stackmachine/integrity) ![GithubActions](https://github.com/stackmachine/integrity/workflows/ci/badge.svg?branch=master)
 
 stackmachine/integrity makes it easy to enable subresource integrity for your web
 applications.
-
-## Install
-
-```
-dep ensure github.com/stackmachine/integrity
-```
 
 ## Usage
 
@@ -16,55 +10,59 @@ dep ensure github.com/stackmachine/integrity
 package main
 
 import (
-    "fmt"
+	"fmt"
+	"log"
 
-    "github.com/stackmachine/integrity"
+	"github.com/stackmachine/integrity"
 )
 
 func main() {
-    // Calculate SHA512 digests for all your static assets
-    fs, err := integrity.ParseFiles("static")
-    if err != nil {
-        panic(err)
-    }
+	// Calculate SHA512 digests for all your static assets
+	fs, err := integrity.ParseFiles("static")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Return the digest for a given file path, returning an error if it
-    // doesn't exist.
-    sha, err := fs.Digest("css/style.css")
-    if err != nil {
-        panic(err)
-    }
+	// Return the digest for a given file path, returning an error if it
+	// doesn't exist.
+	sha, err := fs.Digest("css/style.css")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    // Set the `integrity` parameter on a script or link element
-    fmt.Printf(`<script type="javascript" integrity="%s" src="...">`, sha)
+	// Use the parameter on a script or link element
+	fmt.Println("integrity", sha)
 }
 ```
 
-The `integrity` package also ships with a `http.Handler` that checks if an included
-digest is valid.
+The package also ships with a `http.Handler` that checks if an included digest
+is valid.
 
 ```go
 package main
 
 import (
-    "net/http"
-    
-    "github.com/stackmachine/integrity"
+	"fmt"
+	"log"
+	"net/http"
+
+	"github.com/stackmachine/integrity"
 )
 
 func main() {
-    fs, err := integrity.ParseFiles("static")
-    if err != nil {
-        panic(err)
-    }
+	fs, err := integrity.ParseFiles("static")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-    handler := http.FileServer(http.Dir("testdata"))
-    handler = integrity.Verify(handler, fs)
-    handler = http.StripPrefix("/static/", handler)
+	handler := http.FileServer(http.Dir("testdata"))
+	handler = integrity.Verify(fs, handler)
+	handler = http.StripPrefix("/static/", handler)
 
-    // 200 - GET /static/css/style.css 
-    // 200 - GET /static/css/style.css?sha=sha512-valid
-    // 404 - GET /static/css/style.css?sha=sha512-invalid
-    http.ListenAndServe(handler, nil)
+	// 200 - GET /static/css/style.css
+	// 200 - GET /static/css/style.css?sha=sha512-valid
+	// 404 - GET /static/css/style.css?sha=sha512-invalid
+	fmt.Println("listening on :8080...")
+	http.ListenAndServe(":8080", handler)
 }
 ```
